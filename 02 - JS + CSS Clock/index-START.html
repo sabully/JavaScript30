@@ -109,32 +109,6 @@
       }
     </style>
 
-    <script>
-      const hourHandEl = document.querySelector(".hour-hand");
-      const minHandEl = document.querySelector(".min-hand");
-      const secondHandEl = document.querySelector(".second-hand");
-
-      function setDate() {
-        const nowDate = new Date();
-        let hours = nowDate.getHours() % 12;
-        let minutes = nowDate.getMinutes();
-        let seconds = nowDate.getSeconds();
-        getHoursDeg = hours * 30 + (minutes / 60) * 30;
-        getMinutesDeg = minutes * 6 + (seconds / 60) * 6;
-        getSecondsDeg = seconds * 6;
-
-        if (getSecondsDeg === 0 || getMinutesDeg === 0 || getHoursDeg === 0) {
-          secondHandEl.style.transition = "all 0s";
-          secondHandEl.style.transition = "all 0.05s cubic-bezier(0.9, 0.54, 0.26, 1.68)";
-        }
-
-        hourHandEl.style.setProperty("--rotation", `${getHoursDeg}deg`);
-        minHandEl.style.setProperty("--rotation", `${getMinutesDeg}deg`);
-        secondHandEl.style.setProperty("--rotation", `${getSecondsDeg}deg`);
-      }
-
-      setDate();
-      setInterval(setDate, 1000);
-    </script>
+    <script></script>
   </body>
 </html>
