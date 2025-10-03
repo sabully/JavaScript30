@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>JS + CSS Clock</title>
-</head>
-<body>
-
-
+  <head>
+    <meta charset="UTF-8" />
+    <title>JS + CSS Clock</title>
+  </head>
+  <body>
     <div class="clock">
       <div class="clock-face">
         <div class="hand hour-hand"></div>
@@ -15,59 +13,128 @@
       </div>
     </div>
 
+    <style>
+      html {
+        background: #018ded url("./background.jpg");
+        background-size: cover;
+        font-family: "helvetica neue";
+        text-align: center;
+        font-size: 10px;
+      }
 
-  <style>
-    html {
-      background:#018DED url(http://unsplash.it/1500/1000?image=881&blur=50);
-      background-size:cover;
-      font-family:'helvetica neue';
-      text-align: center;
-      font-size: 10px;
-    }
+      body {
+        font-size: 2rem;
+        display: flex;
+        flex: 1;
+        min-height: 100vh;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+      }
 
-    body {
-      font-size: 2rem;
-      display:flex;
-      flex:1;
-      min-height: 100vh;
-      align-items: center;
-    }
+      .clock {
+        width: 30rem;
+        height: 30rem;
+        border: 20px solid white;
+        border-radius: 50%;
+        margin: auto;
+        position: relative;
+        padding: 2rem;
+        background: rgba(0, 0, 0, 0.306);
+        box-shadow: 0 0 2px 4px rgba(0, 0, 0, 0.1), inset 0 0 1px 2px #efefef,
+          inset 0 0 30px black, 0 0 10px 3px rgba(0, 0, 0, 0.2);
+      }
 
-    .clock {
-      width: 30rem;
-      height: 30rem;
-      border:20px solid white;
-      border-radius:50%;
-      margin:50px auto;
-      position: relative;
-      padding:2rem;
-      box-shadow:
-        0 0 0 4px rgba(0,0,0,0.1),
-        inset 0 0 0 3px #EFEFEF,
-        inset 0 0 10px black,
-        0 0 10px rgba(0,0,0,0.2);
-    }
+      /* 表盘 */
+      .clock-face {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
 
-    .clock-face {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      transform: translateY(-3px); /* account for the height of the clock hands */
-    }
+      /* 圆点 */
+      .clock-face::before {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: block;
+        content: "";
 
-    .hand {
-      width:50%;
-      height:6px;
-      background:black;
-      position: absolute;
-      top:50%;
-    }
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: #95c0d3;
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.388),
+          0 0 10px rgba(0, 0, 0, 0.751);
+        z-index: 1;
+      }
 
-  </style>
+      /* 指针统一样式 */
+      .hand {
+        position: absolute;
+        bottom: 50%;
+        left: 50%;
+        transform-origin: 50% 100%;
+        background-color: #fff;
+        transform: translate(-50%) rotate(var(--rotation, 0deg));
+        transition: transform 0.05s cubic-bezier(0.9, 0.54, 0.26, 1.68);
+        box-shadow: 5px 5px 1px rgba(0, 0, 0, 0.5);
+      }
 
-  <script>
+      /* 秒针 */
+      .second-hand {
+        width: 4px;
+        height: 14rem;
+        border-top-left-radius: 50%;
+        border-top-right-radius: 50%;
+        background-color: red;
+        transition: all 0.05s cubic-bezier(0.9, 0.54, 0.26, 1.68);
+      }
 
+      /* 分针 */
+      .min-hand {
+        width: 5px;
+        height: 14rem;
+        transition: all 0.1s cubic-bezier(0.9, 0.54, 0.26, 1.68);
+      }
 
-  </script>
-</body>
+      /* 时针 */
+      .hour-hand {
+        width: 10px;
+        height: 8rem;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        transition: all 3s;
+      }
+    </style>
+
+    <script>
+      const hourHandEl = document.querySelector(".hour-hand");
+      const minHandEl = document.querySelector(".min-hand");
+      const secondHandEl = document.querySelector(".second-hand");
+
+      function setDate() {
+        const nowDate = new Date();
+        let hours = nowDate.getHours() % 12;
+        let minutes = nowDate.getMinutes();
+        let seconds = nowDate.getSeconds();
+        getHoursDeg = hours * 30 + (minutes / 60) * 30;
+        getMinutesDeg = minutes * 6 + (seconds / 60) * 6;
+        getSecondsDeg = seconds * 6;
+
+        if (getSecondsDeg === 0 || getMinutesDeg === 0 || getHoursDeg === 0) {
+          secondHandEl.style.transition = "all 0s";
+          secondHandEl.style.transition = "all 0.05s cubic-bezier(0.9, 0.54, 0.26, 1.68)";
+        }
+
+        hourHandEl.style.setProperty("--rotation", `${getHoursDeg}deg`);
+        minHandEl.style.setProperty("--rotation", `${getMinutesDeg}deg`);
+        secondHandEl.style.setProperty("--rotation", `${getSecondsDeg}deg`);
+      }
+
+      setDate();
+      setInterval(setDate, 1000);
+    </script>
+  </body>
 </html>
