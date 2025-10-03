@@ -1,54 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Scoped CSS Variables and JS</title>
-</head>
-<body>
-  <h2>Update CSS Variables with <span class='hl'>JS</span></h2>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Scoped CSS Variables and JS</title>
+  </head>
+  <body>
+    <h2>Update CSS Variables with <span class="hl">JS</span></h2>
 
-  <div class="controls">
-    <label for="spacing">Spacing:</label>
-    <input type="range" name="spacing" min="10" max="200" value="10" data-sizing="px">
+    <div class="controls">
+      <label for="spacing">Spacing:</label>
+      <input
+        type="range"
+        name="spacing"
+        min="0"
+        max="70"
+        value="10"
+        data-sizing="px"
+      />
 
-    <label for="blur">Blur:</label>
-    <input type="range" name="blur" min="0" max="25" value="10" data-sizing="px">
+      <label for="blur">Blur:</label>
+      <input
+        type="range"
+        name="blur"
+        min="0"
+        max="25"
+        value="0"
+        data-sizing="px"
+      />
 
-    <label for="base">Base Color</label>
-    <input type="color" name="base" value="#ffc600">
-  </div>
+      <label for="base">Base Color</label>
+      <input type="color" name="base" value="#ffc600" />
+    </div>
 
-  <img src="https://source.unsplash.com/7bwQXzbF6KE/800x500">
+    <img
+      width="40%"
+      src="https://random-image-api.bakacookie520.top/pc-dark/file_32.webp"
+    />
 
-  <style>
+    <style>
+      :root {
+        --spacing: 10px;
+        --blur: 0px;
+        --base: #ffc600;
+      }
+      body {
+        text-align: center;
+        margin: 0;
+        padding: 0;
+      }
 
-    /*
-      misc styles, nothing to do with CSS variables
-    */
+      body {
+        background: #193549;
+        color: white;
+        font-family: "helvetica neue", sans-serif;
+        font-weight: 100;
+        font-size: 50px;
+      }
 
-    body {
-      text-align: center;
-    }
+      .controls {
+        margin-bottom: 50px;
+      }
 
-    body {
-      background: #193549;
-      color: white;
-      font-family: 'helvetica neue', sans-serif;
-      font-weight: 100;
-      font-size: 50px;
-    }
+      input {
+        width: 100px;
+      }
 
-    .controls {
-      margin-bottom: 50px;
-    }
+      img {
+        display: block;
+        margin: 0 auto;
+        background-color: var(--base);
+        padding: var(--spacing);
+        filter: blur(var(--blur));
+      }
 
-    input {
-      width:100px;
-    }
-  </style>
+      .hl {
+        color: var(--base);
+      }
+    </style>
 
-  <script>
-  </script>
+    <script>
+      const inputEls = document.querySelectorAll(".controls input");
+      const imgEl = document.querySelector("img");
+      const hlEl = document.querySelector(".hl");
 
-</body>
+      const handleInputChange = function() {
+        const unit = this.dataset.sizing || "";
+        hlEl.style.setProperty(`color`, `${this.value}`);
+        imgEl.style.setProperty(`--${this.name}`, `${this.value}${unit}`);
+      };
+
+      inputEls.forEach(inputEl => inputEl.addEventListener("input", handleInputChange));
+      //初始化页面给每个input调用处理函数,确保页面样式和控件值一致
+      inputEls.forEach(inputEl => {
+        handleInputChange.call(inputEl)
+      });
+      
+    </script>
+  </body>
 </html>
