@@ -1,22 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Type Ahead 👀</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Type Ahead 👀</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+    </style>
+  </head>
+  <body>
+    <form class="search-form">
+      <input type="text" class="search" placeholder="输入关键词，找一首诗" />
+      <ul class="suggestions"></ul>
+    </form>
+    <script>
+      const endpoint =
+        "https://gist.githubusercontent.com/soyaine/81399bb2b24ca1bb5313e1985533c640/raw/bdf7df2cbcf70706c4a5e51a7dfb8c933ed78878/TangPoetry.json";
+      const poetrys = [];
 
-  <form class="search-form">
-    <input type="text" class="search" placeholder="City or State">
-    <ul class="suggestions">
-      <li>Filter for a city</li>
-      <li>or a state</li>
-    </ul>
-  </form>
-<script>
-const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+      // 使用 async/await 提高异步代码可读性
+      async function fetchData() {
+        try {
+          const response = await fetch(endpoint);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          poetrys.push(...data);
+        } catch (error) {
+          console.error("无法获取诗词数据:", error);
+          // 可以在页面上给用户一个友好的提示
+          suggestionsEl.innerHTML = `<li>数据加载失败，请稍后重试</li>`;
+        }
+      }
 
-</script>
+      function findMatches(wordToMatch, poetrys) {
+        if (!wordToMatch) {
+          return [];
+        }
+        const regex = new RegExp(wordToMatch, "gi");
+        return poetrys.filter((poet) => {
+          // 将作者数组转换为字符串以便搜索
+          const author = poet.detail_author.join("");
+          // 检查标题、作者或正文是否匹配
+          return (
+            poet.title.match(regex) ||
+            author.match(regex) ||
+            poet.detail_text.match(regex)
+          );
+        });
+      }
+
+      function displayMatches() {
+        const keyword = this.value.trim(); // 使用 trim() 移除前后空格
+        if (!keyword) {
+          suggestionsEl.innerHTML = ``; 
+          return;
+        }
+
+        const matches = findMatches(keyword, poetrys);
+        const regex = new RegExp(keyword, "gi");
+
+        const html = matches
+          .map((poet) => {
+            const text = poet.detail_text.replace(
+              regex,
+              `<span class="hl">${keyword}</span>`
+            );
+            const title = poet.title.replace(
+              regex,
+              `<span class="hl">${keyword}</span>`
+            );
+            const author = poet.detail_author
+              .join("")
+              .replace(regex, `<span class="hl">${keyword}</span>`);
+
+            return `
+                <li>
+                    <span class="poet">${text}</span>
+                    <span class="title">${title} - ${author}</span>
+                </li>
+            `;
+          })
+          .join("");
+
+        console.log(html)
+
+        // 如果没有匹配项，给出提示
+        suggestionsEl.innerHTML = html || `<li>没有找到匹配的诗词</li>`;
+      }
+
+      const searchEl = document.querySelector(".search");
+      const suggestionsEl = document.querySelector(".suggestions");
+
+      // 调用函数获取数据
+      fetchData();
+
+      searchEl.addEventListener("input", displayMatches);
+    </script>
   </body>
 </html>
